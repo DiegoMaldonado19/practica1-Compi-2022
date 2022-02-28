@@ -1,0 +1,299 @@
+//Seccion: codigo
+package analizadores;
+import java_cup.runtime.*;
+import java.util.*;
+import modelo.Token;
+import controlador.Manejador;
+
+parser code {:
+
+        private ArrayList<String> errorList;
+        private ArrayList<Manejador> clavesList;
+
+        public Parser(Lexer lex){
+            super(lex);
+            this.errorList = new ArrayList();
+            this.clavesList = new ArrayList();
+        }
+
+        @Override
+        public void syntax_error(Symbol symbol){
+            Token token = (Token) symbol.value;
+            report_error("Se encontro un error con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn());
+
+            System.out.println(report_error("Se encontro un error con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn()));
+
+            errorList.add(String.format(report_error("Se encontro un error con el token: "+token.getLexeme()+" en la linea: "+token.getLine()+" en la columna: "+token.getColumn())));
+        }
+
+        private String report_error(String s) {
+            return s;
+        }
+
+        public ArrayList<Manejador> getClavesList(){
+            return clavesList;
+        }
+
+        public ArrayList<String> getErrorList(){
+            return errorList;
+        }
+:}
+
+//Seccion: terminales
+
+terminal Token DEF;
+terminal Token BARRAS;
+terminal Token PIE;
+terminal Token TITULO;
+terminal Token EJE_X;
+terminal Token EJE_Y;
+terminal Token ETIQUETAS;
+terminal Token VALORES;
+terminal Token UNIR;
+terminal Token TIPO;
+terminal Token CANTIDAD;
+terminal Token PORCENTAJE;
+terminal Token TOTAL;
+terminal Token EXTRA;
+terminal Token EJECUTAR;
+terminal Token MAS;
+terminal Token MENOS;
+terminal Token ALMOHADILLA;
+terminal Token DIAGONAL;
+terminal Token PARENTESIS_A;
+terminal Token PARENTESIS_C;
+terminal Token CORCHETE_A;
+terminal Token CORCHETE_C;
+terminal Token LLAVE_A;
+terminal Token LLAVE_C;
+terminal Token COMILLA;
+terminal Token PUNTO_COMA;
+terminal Token DOS_PUNTOS;
+terminal Token COMENTARIO;
+terminal Token NUMERO;
+terminal Token DECIMAL;
+terminal Token IDENTIFICADOR;
+terminal Token COMA;
+
+non terminal definicion; 
+non terminal titulo; 
+non terminal tipo; 
+non terminal ejex; 
+non terminal ejey; 
+non terminal unir;
+non terminal etiquetas; 
+non terminal valores; 
+non terminal total; 
+non terminal extra; 
+non terminal ejecutar;
+non terminal cuerpoDefinicionB;
+non terminal cuerpoDefinicionP; 
+non terminal comentario;
+non terminal item; 
+non terminal itemN; 
+non terminal operacion; 
+non terminal expresion;
+
+precedence left MAS, MENOS;
+precedence left DIAGONAL, ALMOHADILLA;
+precedence nonassoc PARENTESIS_A, PARENTESIS_C;
+
+
+// Seccion: Gramatica
+
+start with definicion;
+
+definicion ::= DEF BARRAS:e LLAVE_A cuerpoDefinicionB LLAVE_C               {: clavesList.add( new Manejador(e.getLexeme())); :}
+            | DEF PIE:e LLAVE_A  cuerpoDefinicionP  LLAVE_C                 {: clavesList.add( new Manejador(e.getLexeme()));  :}
+            | DEF BARRAS:e LLAVE_A cuerpoDefinicionB LLAVE_C definicion     {: clavesList.add( new Manejador(e.getLexeme()));  :}
+            | DEF PIE:e LLAVE_A  cuerpoDefinicionP  LLAVE_C  definicion     {: clavesList.add( new Manejador(e.getLexeme()));  :}
+            | error                                                         {: System.out.println("Error en gramatica");  :}
+            ;
+
+ejecutar ::= EJECUTAR PARENTESIS_A COMILLA IDENTIFICADOR:i COMILLA PARENTESIS_C PUNTO_COMA               {: clavesList.add( new Manejador(i.getLexeme())); :}
+           | EJECUTAR PARENTESIS_A COMILLA IDENTIFICADOR:i COMILLA PARENTESIS_C PUNTO_COMA ejecutar      {: clavesList.add( new Manejador(i.getLexeme())); :}
+           | error                                                         {: System.out.println("Error en gramatica");  :}
+           ;
+
+cuerpoDefinicionB   ::= titulo 
+                    |  ejex 
+                    |  ejey
+                    |  unir 
+                    |  titulo cuerpoDefinicionB 
+                    |  ejex cuerpoDefinicionB
+                    |  ejey cuerpoDefinicionB
+                    |  unir cuerpoDefinicionB  
+                    ;
+
+cuerpoDefinicionP ::= titulo
+                    | tipo 
+                    | etiquetas
+                    | valores
+                    | unir
+                    | total
+                    | extra
+                    | titulo cuerpoDefinicionP
+                    | tipo  cuerpoDefinicionP
+                    | etiquetas cuerpoDefinicionP
+                    | valores  cuerpoDefinicionP
+                    | unir cuerpoDefinicionP
+                    | total cuerpoDefinicionP
+                    | extra cuerpoDefinicionP
+                    ;
+                
+comentario ::= COMENTARIO:c             {: clavesList.add( new Manejador(c.getLexeme()));  :}
+            | error                                                         {: System.out.println("Error en gramatica");  :}
+            ;
+
+titulo ::= TITULO DOS_PUNTOS COMILLA IDENTIFICADOR:nombreGrafica COMILLA PUNTO_COMA     {: clavesList.add( new Manejador(nombreGrafica.getLexeme()));  :}
+        | error                                                         {: System.out.println("Error en gramatica");  :}
+        ;
+
+ejex ::= EJE_X DOS_PUNTOS CORCHETE_A  item  CORCHETE_C PUNTO_COMA
+        | EJE_X DOS_PUNTOS CORCHETE_A  item  CORCHETE_C COMA ejex
+        ;
+
+ejey ::= EJE_Y DOS_PUNTOS CORCHETE_A itemN CORCHETE_C PUNTO_COMA
+        ;
+
+etiquetas ::= ETIQUETAS DOS_PUNTOS CORCHETE_A item CORCHETE_C PUNTO_COMA
+        ;
+
+valores ::= VALORES DOS_PUNTOS CORCHETE_A itemN CORCHETE_C PUNTO_COMA
+        ;
+
+unir ::= UNIR DOS_PUNTOS CORCHETE_A LLAVE_A itemN LLAVE_C CORCHETE_C PUNTO_COMA
+        | UNIR DOS_PUNTOS CORCHETE_A LLAVE_A itemN LLAVE_C COMA
+        | LLAVE_A itemN LLAVE_C CORCHETE_C PUNTO_COMA
+        | LLAVE_A itemN LLAVE_C COMA unir
+        ;
+
+
+tipo ::= TIPO DOS_PUNTOS CANTIDAD:cantidad PUNTO_COMA              {: clavesList.add( new Manejador(cantidad.getLexeme()));  :}
+        | TIPO DOS_PUNTOS PORCENTAJE:porcentaje PUNTO_COMA         {: clavesList.add( new Manejador(porcentaje.getLexeme()));  :}
+        ;
+
+extra ::= EXTRA DOS_PUNTOS COMILLA IDENTIFICADOR:extra COMILLA PUNTO_COMA     {: clavesList.add( new Manejador(extra.getLexeme()));  :}
+        ;
+
+total ::= TOTAL DOS_PUNTOS itemN PUNTO_COMA
+        ;
+
+item ::= COMILLA IDENTIFICADOR:identificador COMILLA                  {: clavesList.add( new Manejador(identificador.getLexeme()));  :}
+        | COMILLA IDENTIFICADOR:identificador COMILLA COMA item       {: clavesList.add( new Manejador(identificador.getLexeme()));  :}
+        | error                                                     {: System.out.println("Error en gramatica");  :}
+        ;
+
+itemN ::= NUMERO:n              {: clavesList.add( new Manejador(n.getLexeme()));  :}
+        | NUMERO:n COMA itemN   {: clavesList.add( new Manejador(n.getLexeme()));  :}
+        | DECIMAL:d             {: clavesList.add( new Manejador(d.getLexeme()));  :}
+        | DECIMAL:d COMA itemN  {: clavesList.add( new Manejador(d.getLexeme()));  :}
+        | operacion
+        | operacion COMA itemN
+        ;
+    
+operacion ::= PARENTESIS_A expresion PARENTESIS_C 
+            | PARENTESIS_A expresion PARENTESIS_C operacion
+            | expresion 
+            | expresion operacion
+            ;
+
+expresion ::= NUMERO:n1 MAS:m NUMERO:n2         {: 
+                                                clavesList.add( new Manejador(n1.getLexeme()));
+                                                clavesList.add( new Manejador(m.getLexeme()));  
+                                                clavesList.add( new Manejador(n2.getLexeme()));
+                                                :}
+
+            | DECIMAL:d1 MAS:m DECIMAL:d2        {: 
+                                                clavesList.add( new Manejador(d1.getLexeme()));
+                                                clavesList.add( new Manejador(m.getLexeme()));  
+                                                clavesList.add( new Manejador(d2.getLexeme()));
+                                                :}
+
+            | MAS:m DECIMAL:d                   {: 
+                                                clavesList.add( new Manejador(m.getLexeme()));
+                                                clavesList.add( new Manejador(d.getLexeme()));  
+                                                :}
+
+            | MAS:m NUMERO:n                    {: 
+                                                clavesList.add( new Manejador(m.getLexeme()));
+                                                clavesList.add( new Manejador(n.getLexeme()));  
+                                                :}
+
+            | NUMERO:n1 MENOS:m NUMERO:n2        {: 
+                                                clavesList.add( new Manejador(n1.getLexeme()));
+                                                clavesList.add( new Manejador(m.getLexeme()));  
+                                                clavesList.add( new Manejador(n2.getLexeme()));
+                                                :}
+
+            | DECIMAL:d1 MENOS:m DECIMAL:d2      {: 
+                                                clavesList.add( new Manejador(d1.getLexeme()));
+                                                clavesList.add( new Manejador(m.getLexeme()));  
+                                                clavesList.add( new Manejador(d2.getLexeme()));
+                                                :}
+
+            | MENOS:m DECIMAL:d                  {: 
+                                                clavesList.add( new Manejador(m.getLexeme()));
+                                                clavesList.add( new Manejador(d.getLexeme()));  
+                                                :}
+
+            | MENOS:m NUMERO:n                   {: 
+                                                clavesList.add( new Manejador(m.getLexeme()));
+                                                clavesList.add( new Manejador(n.getLexeme()));  
+                                                :}
+
+            | NUMERO:n1 ALMOHADILLA:a NUMERO:n2  {: 
+                                                clavesList.add( new Manejador(n1.getLexeme()));
+                                                clavesList.add( new Manejador(a.getLexeme()));  
+                                                clavesList.add( new Manejador(n2.getLexeme()));
+                                                :}
+
+            | DECIMAL:d1 ALMOHADILLA:a DECIMAL:d2        {: 
+                                                        clavesList.add( new Manejador(d1.getLexeme()));
+                                                        clavesList.add( new Manejador(a.getLexeme()));  
+                                                        clavesList.add( new Manejador(d2.getLexeme()));
+                                                        :}
+
+            | ALMOHADILLA:a DECIMAL:d            {: 
+                                                clavesList.add( new Manejador(a.getLexeme()));
+                                                clavesList.add( new Manejador(d.getLexeme()));  
+                                                :}
+
+            | ALMOHADILLA:a NUMERO:n             {: 
+                                                clavesList.add( new Manejador(a.getLexeme()));
+                                                clavesList.add( new Manejador(n.getLexeme()));  
+                                                :}
+
+            | NUMERO:n1 DIAGONAL:dia NUMERO:n2   {: 
+                                                clavesList.add( new Manejador(n1.getLexeme()));
+                                                clavesList.add( new Manejador(dia.getLexeme()));  
+                                                clavesList.add( new Manejador(n2.getLexeme()));
+                                                :}
+
+            | DECIMAL:d1 DIAGONAL:dia DECIMAL:d2         {: 
+                                                        clavesList.add( new Manejador(d1.getLexeme()));
+                                                        clavesList.add( new Manejador(dia.getLexeme()));  
+                                                        clavesList.add( new Manejador(d2.getLexeme()));
+                                                        :}
+            | DIAGONAL:dia DECIMAL:d             {: 
+                                                clavesList.add( new Manejador(dia.getLexeme()));
+                                                clavesList.add( new Manejador(d.getLexeme()));  
+                                                :}
+
+            | DIAGONAL:dia NUMERO:n              {: 
+                                                clavesList.add( new Manejador(dia.getLexeme()));
+                                                clavesList.add( new Manejador(n.getLexeme()));  
+                                                :}
+            | error                                                {: System.out.println("Error en gramatica");  :}
+            ;
+
+
+
+
+
+
+
+
+
+
+

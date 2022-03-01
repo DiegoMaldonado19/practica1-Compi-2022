@@ -109,14 +109,14 @@ main ::= definicion
         |  definicion ejecutar
         ;
 
-definicion ::= DEF BARRAS:e LLAVE_A cuerpoDefinicionB LLAVE_C               {: clavesList.add( new Manejador(e.getLexeme())); :}
-            | DEF PIE:e LLAVE_A  cuerpoDefinicionP  LLAVE_C                 {: clavesList.add( new Manejador(e.getLexeme()));  :}
-            | DEF BARRAS:e LLAVE_A cuerpoDefinicionB LLAVE_C definicion     {: clavesList.add( new Manejador(e.getLexeme()));  :}
-            | DEF PIE:e LLAVE_A  cuerpoDefinicionP  LLAVE_C  definicion     {: clavesList.add( new Manejador(e.getLexeme()));  :}
+definicion ::= DEF BARRAS:e LLAVE_A cuerpoDefinicionB LLAVE_C               {: clavesList.add( new Manejador(e.getLexeme(), 1)); :}
+            | DEF PIE:e LLAVE_A  cuerpoDefinicionP  LLAVE_C                 {: clavesList.add( new Manejador(e.getLexeme(), 1));  :}
+            | DEF BARRAS:e LLAVE_A cuerpoDefinicionB LLAVE_C definicion     {: clavesList.add( new Manejador(e.getLexeme(), 1));  :}
+            | DEF PIE:e LLAVE_A  cuerpoDefinicionP  LLAVE_C  definicion     {: clavesList.add( new Manejador(e.getLexeme(), 1));  :}
             ;
 
-ejecutar ::= EJECUTAR PARENTESIS_A COMILLA IDENTIFICADOR:i COMILLA PARENTESIS_C PUNTO_COMA               {: clavesList.add( new Manejador(i.getLexeme())); :}
-           | EJECUTAR PARENTESIS_A COMILLA IDENTIFICADOR:i COMILLA PARENTESIS_C PUNTO_COMA ejecutar      {: clavesList.add( new Manejador(i.getLexeme())); :}
+ejecutar ::= EJECUTAR PARENTESIS_A COMILLA IDENTIFICADOR:i COMILLA PARENTESIS_C PUNTO_COMA               {: clavesList.add( new Manejador(i.getLexeme(),1)); :}
+           | EJECUTAR PARENTESIS_A COMILLA IDENTIFICADOR:i COMILLA PARENTESIS_C PUNTO_COMA ejecutar      {: clavesList.add( new Manejador(i.getLexeme(),1)); :}
            ;
 
 cuerpoDefinicionB   ::= titulo 
@@ -145,14 +145,13 @@ cuerpoDefinicionP ::= titulo
                     | extra cuerpoDefinicionP
                     ;
                 
-comentario ::= COMENTARIO:c             {: clavesList.add( new Manejador(c.getLexeme()));  :}
+comentario ::= COMENTARIO:c             {: clavesList.add( new Manejador(c.getLexeme(),8));  :}
             ;
 
-titulo ::= TITULO DOS_PUNTOS COMILLA IDENTIFICADOR:nombreGrafica COMILLA PUNTO_COMA     {: clavesList.add( new Manejador(nombreGrafica.getLexeme()));  :}
+titulo ::= TITULO DOS_PUNTOS COMILLA IDENTIFICADOR:nombreGrafica COMILLA PUNTO_COMA     {: clavesList.add( new Manejador(nombreGrafica.getLexeme(),2));  :}
         ;
 
 ejex ::= EJE_X DOS_PUNTOS CORCHETE_A  item  CORCHETE_C PUNTO_COMA
-        | EJE_X DOS_PUNTOS CORCHETE_A  item  CORCHETE_C COMA ejex
         ;
 
 ejey ::= EJE_Y DOS_PUNTOS CORCHETE_A itemN CORCHETE_C PUNTO_COMA
@@ -171,24 +170,24 @@ unir ::= UNIR DOS_PUNTOS CORCHETE_A LLAVE_A itemN LLAVE_C CORCHETE_C PUNTO_COMA
         ;
 
 
-tipo ::= TIPO DOS_PUNTOS CANTIDAD:cantidad PUNTO_COMA              {: clavesList.add( new Manejador(cantidad.getLexeme()));  :}
-        | TIPO DOS_PUNTOS PORCENTAJE:porcentaje PUNTO_COMA         {: clavesList.add( new Manejador(porcentaje.getLexeme()));  :}
+tipo ::= TIPO DOS_PUNTOS CANTIDAD:cantidad PUNTO_COMA              {: clavesList.add( new Manejador(cantidad.getLexeme(),5));  :}
+        | TIPO DOS_PUNTOS PORCENTAJE:porcentaje PUNTO_COMA         {: clavesList.add( new Manejador(porcentaje.getLexeme(),5));  :}
         ;
 
-extra ::= EXTRA DOS_PUNTOS COMILLA IDENTIFICADOR:extra COMILLA PUNTO_COMA     {: clavesList.add( new Manejador(extra.getLexeme()));  :}
+extra ::= EXTRA DOS_PUNTOS COMILLA IDENTIFICADOR:extra COMILLA PUNTO_COMA     {: clavesList.add( new Manejador(extra.getLexeme(),6));  :}
         ;
 
 total ::= TOTAL DOS_PUNTOS itemN PUNTO_COMA
         ;
 
-item ::= COMILLA IDENTIFICADOR:identificador COMILLA                  {: clavesList.add( new Manejador(identificador.getLexeme()));  :}
-        | COMILLA IDENTIFICADOR:identificador COMILLA COMA item       {: clavesList.add( new Manejador(identificador.getLexeme()));  :}
+item ::= COMILLA IDENTIFICADOR:identificador COMILLA                  {: clavesList.add( new Manejador(identificador.getLexeme(),3));  :}
+        | COMILLA IDENTIFICADOR:identificador COMILLA COMA item       {: clavesList.add( new Manejador(identificador.getLexeme(),3));  :}
         ;
 
-itemN ::= NUMERO:n              {: clavesList.add( new Manejador(n.getLexeme()));  :}
-        | NUMERO:n COMA itemN   {: clavesList.add( new Manejador(n.getLexeme()));  :}
-        | DECIMAL:d             {: clavesList.add( new Manejador(d.getLexeme()));  :}
-        | DECIMAL:d COMA itemN  {: clavesList.add( new Manejador(d.getLexeme()));  :}
+itemN ::= NUMERO:n              {: clavesList.add( new Manejador(n.getLexeme(),4));  :}
+        | NUMERO:n COMA itemN   {: clavesList.add( new Manejador(n.getLexeme(),4));  :}
+        | DECIMAL:d             {: clavesList.add( new Manejador(d.getLexeme(),4));  :}
+        | DECIMAL:d COMA itemN  {: clavesList.add( new Manejador(d.getLexeme(),4));  :}
         | operacion
         | operacion COMA itemN
         ;
@@ -200,90 +199,90 @@ operacion ::= PARENTESIS_A expresion PARENTESIS_C
             ;
 
 expresion ::= NUMERO:n1 MAS:m NUMERO:n2         {: 
-                                                clavesList.add( new Manejador(n1.getLexeme()));
-                                                clavesList.add( new Manejador(m.getLexeme()));  
-                                                clavesList.add( new Manejador(n2.getLexeme()));
+                                                clavesList.add( new Manejador(n1.getLexeme(),4));
+                                                clavesList.add( new Manejador(m.getLexeme(),4));  
+                                                clavesList.add( new Manejador(n2.getLexeme(),4));
                                                 :}
 
             | DECIMAL:d1 MAS:m DECIMAL:d2        {: 
-                                                clavesList.add( new Manejador(d1.getLexeme()));
-                                                clavesList.add( new Manejador(m.getLexeme()));  
-                                                clavesList.add( new Manejador(d2.getLexeme()));
+                                                clavesList.add( new Manejador(d1.getLexeme(),4));
+                                                clavesList.add( new Manejador(m.getLexeme(),4));  
+                                                clavesList.add( new Manejador(d2.getLexeme(),4));
                                                 :}
 
             | MAS:m DECIMAL:d                   {: 
-                                                clavesList.add( new Manejador(m.getLexeme()));
-                                                clavesList.add( new Manejador(d.getLexeme()));  
+                                                clavesList.add( new Manejador(m.getLexeme(),4));
+                                                clavesList.add( new Manejador(d.getLexeme(),4));  
                                                 :}
 
             | MAS:m NUMERO:n                    {: 
-                                                clavesList.add( new Manejador(m.getLexeme()));
-                                                clavesList.add( new Manejador(n.getLexeme()));  
+                                                clavesList.add( new Manejador(m.getLexeme(),4));
+                                                clavesList.add( new Manejador(n.getLexeme(),4));  
                                                 :}
 
             | NUMERO:n1 MENOS:m NUMERO:n2        {: 
-                                                clavesList.add( new Manejador(n1.getLexeme()));
-                                                clavesList.add( new Manejador(m.getLexeme()));  
-                                                clavesList.add( new Manejador(n2.getLexeme()));
+                                                clavesList.add( new Manejador(n1.getLexeme(),4));
+                                                clavesList.add( new Manejador(m.getLexeme(),4));  
+                                                clavesList.add( new Manejador(n2.getLexeme(),4));
                                                 :}
 
             | DECIMAL:d1 MENOS:m DECIMAL:d2      {: 
-                                                clavesList.add( new Manejador(d1.getLexeme()));
-                                                clavesList.add( new Manejador(m.getLexeme()));  
-                                                clavesList.add( new Manejador(d2.getLexeme()));
+                                                clavesList.add( new Manejador(d1.getLexeme(),4));
+                                                clavesList.add( new Manejador(m.getLexeme(),4));  
+                                                clavesList.add( new Manejador(d2.getLexeme(),4));
                                                 :}
 
             | MENOS:m DECIMAL:d                  {: 
-                                                clavesList.add( new Manejador(m.getLexeme()));
-                                                clavesList.add( new Manejador(d.getLexeme()));  
+                                                clavesList.add( new Manejador(m.getLexeme(),4));
+                                                clavesList.add( new Manejador(d.getLexeme(),4));  
                                                 :}
 
             | MENOS:m NUMERO:n                   {: 
-                                                clavesList.add( new Manejador(m.getLexeme()));
-                                                clavesList.add( new Manejador(n.getLexeme()));  
+                                                clavesList.add( new Manejador(m.getLexeme(),4));
+                                                clavesList.add( new Manejador(n.getLexeme(),4));  
                                                 :}
 
             | NUMERO:n1 ALMOHADILLA:a NUMERO:n2  {: 
-                                                clavesList.add( new Manejador(n1.getLexeme()));
-                                                clavesList.add( new Manejador(a.getLexeme()));  
-                                                clavesList.add( new Manejador(n2.getLexeme()));
+                                                clavesList.add( new Manejador(n1.getLexeme(),4));
+                                                clavesList.add( new Manejador(a.getLexeme(),4));  
+                                                clavesList.add( new Manejador(n2.getLexeme(),4));
                                                 :}
 
             | DECIMAL:d1 ALMOHADILLA:a DECIMAL:d2        {: 
-                                                        clavesList.add( new Manejador(d1.getLexeme()));
-                                                        clavesList.add( new Manejador(a.getLexeme()));  
-                                                        clavesList.add( new Manejador(d2.getLexeme()));
+                                                        clavesList.add( new Manejador(d1.getLexeme(),4));
+                                                        clavesList.add( new Manejador(a.getLexeme(),4));  
+                                                        clavesList.add( new Manejador(d2.getLexeme(),4));
                                                         :}
 
             | ALMOHADILLA:a DECIMAL:d            {: 
-                                                clavesList.add( new Manejador(a.getLexeme()));
-                                                clavesList.add( new Manejador(d.getLexeme()));  
+                                                clavesList.add( new Manejador(a.getLexeme(),4));
+                                                clavesList.add( new Manejador(d.getLexeme(),4));  
                                                 :}
 
             | ALMOHADILLA:a NUMERO:n             {: 
-                                                clavesList.add( new Manejador(a.getLexeme()));
-                                                clavesList.add( new Manejador(n.getLexeme()));  
+                                                clavesList.add( new Manejador(a.getLexeme(),4));
+                                                clavesList.add( new Manejador(n.getLexeme(),4));  
                                                 :}
 
             | NUMERO:n1 DIAGONAL:dia NUMERO:n2   {: 
-                                                clavesList.add( new Manejador(n1.getLexeme()));
-                                                clavesList.add( new Manejador(dia.getLexeme()));  
-                                                clavesList.add( new Manejador(n2.getLexeme()));
+                                                clavesList.add( new Manejador(n1.getLexeme(),4));
+                                                clavesList.add( new Manejador(dia.getLexeme(),4));  
+                                                clavesList.add( new Manejador(n2.getLexeme(),4));
                                                 :}
 
             | DECIMAL:d1 DIAGONAL:dia DECIMAL:d2         {: 
-                                                        clavesList.add( new Manejador(d1.getLexeme()));
-                                                        clavesList.add( new Manejador(dia.getLexeme()));  
-                                                        clavesList.add( new Manejador(d2.getLexeme()));
+                                                        clavesList.add( new Manejador(d1.getLexeme(),4));
+                                                        clavesList.add( new Manejador(dia.getLexeme(),4));  
+                                                        clavesList.add( new Manejador(d2.getLexeme(),4));
                                                         :}
             | DIAGONAL:dia DECIMAL:d             {: 
-                                                clavesList.add( new Manejador(dia.getLexeme()));
-                                                clavesList.add( new Manejador(d.getLexeme()));  
+                                                clavesList.add( new Manejador(dia.getLexeme(),4));
+                                                clavesList.add( new Manejador(d.getLexeme(),4));  
                                                 :}
 
             | DIAGONAL:dia NUMERO:n              {: 
-                                                clavesList.add( new Manejador(dia.getLexeme()));
-                                                clavesList.add( new Manejador(n.getLexeme()));  
+                                                clavesList.add( new Manejador(dia.getLexeme(),4));
+                                                clavesList.add( new Manejador(n.getLexeme(),4));  
                                                 :}
             ;
 

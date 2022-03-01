@@ -21,21 +21,21 @@ import modelo.Token;
 
 ESPACIO_BLANCO = [\s\t\r\n]+
 
-DEF = ["def" | "Def"]
-BARRAS = "Barras"
-PIE = "Pie"
-TITULO = "titulo"
-EJE_X = "ejex"
-EJE_Y = "ejey"
-ETIQUETAS = "etiquetas"
-VALORES = "valores"
-UNIR = "unir"
-TIPO = "tipo"
-CANTIDAD = "Cantidad"
-PORCENTAJE = "Porcentaje"
-TOTAL = "total"
-EXTRA = "extra"
-EJECUTAR = "Ejecutar"
+DEF = (D|d)ef
+BARRAS = Barras
+PIE = Pie
+TITULO = titulo
+EJE_X = ejex
+EJE_Y = ejey
+ETIQUETAS = etiquetas
+VALORES = valores
+UNIR = unir
+TIPO = tipo
+CANTIDAD = Cantidad
+PORCENTAJE = Porcentaje
+TOTAL = total
+EXTRA = extra
+EJECUTAR = Ejecutar
 
 MAS = "+"
 MENOS = "-"

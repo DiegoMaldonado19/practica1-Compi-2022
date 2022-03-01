@@ -9,13 +9,16 @@ public class Manejador {
      * Variable que almacena el lexema del token
      */
     private String lexeme;
+    private int tipo;
 
     /**
      * Constructor de la clase
-     * @param lexeme    lexema de un token especifico
+     * @param lexeme       lexema del token
+     * @param tipo          tipo al que pertenece
      */
-    public Manejador(String lexeme){
+    public Manejador(String lexeme, int tipo){
         this.lexeme = lexeme;
+        this.tipo = tipo;
     }
 
     /**
@@ -31,10 +34,19 @@ public class Manejador {
         this.lexeme = lexeme;
     }
 
+    public int getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(int tipo) {
+        this.tipo = tipo;
+    }
+
     @Override
     public String toString() {
         return "Manejador{" +
                 "lexeme='" + lexeme + '\'' +
+                ", tipo=" + tipo +
                 '}';
     }
 }

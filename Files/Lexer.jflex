@@ -19,7 +19,7 @@ import modelo.Token;
 %cup
 %cupdebug
 
-SEPARADORES = [ \r\t\b\f\n]
+ESPACIO_BLANCO = [\s\t\r\n]+
 
 DEF = ["def" | "Def"]
 BARRAS = "Barras"
@@ -104,7 +104,7 @@ IDENTIFICADOR = ([a-zA-z]|[0-9])+([a-zA-z]|[0-9])*
 
     {PIE}  { return symbol(sym.PIE, yytext());}
 
-    {SEPARADORES}  { /*Ignoramos*/ }
+    {ESPACIO_BLANCO}  { /*Ignoramos*/ }
 
     {TITULO}  { return symbol(sym.TITULO, yytext()); }
 
@@ -168,7 +168,7 @@ IDENTIFICADOR = ([a-zA-z]|[0-9])+([a-zA-z]|[0-9])*
 
 }
 
-[^]   { error(yytext()); return symbol(sym.error, yytext());}
+[^]   { error(yytext()); return symbol(sym.ERROR, yytext());}
 
 
 <<EOF>>         { return symbol(sym.EOF); }

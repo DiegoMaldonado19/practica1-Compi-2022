@@ -74,6 +74,7 @@ terminal Token NUMERO;
 terminal Token DECIMAL;
 terminal Token IDENTIFICADOR;
 terminal Token COMA;
+terminal Token ERROR;
 
 non terminal definicion; 
 non terminal titulo; 
@@ -93,6 +94,7 @@ non terminal item;
 non terminal itemN; 
 non terminal operacion; 
 non terminal expresion;
+non terminal main;
 
 precedence left MAS, MENOS;
 precedence left DIAGONAL, ALMOHADILLA;
@@ -101,28 +103,30 @@ precedence nonassoc PARENTESIS_A, PARENTESIS_C;
 
 // Seccion: Gramatica
 
-start with definicion;
+start with main;
+
+main ::= definicion
+        |  definicion ejecutar
+        ;
 
 definicion ::= DEF BARRAS:e LLAVE_A cuerpoDefinicionB LLAVE_C               {: clavesList.add( new Manejador(e.getLexeme())); :}
             | DEF PIE:e LLAVE_A  cuerpoDefinicionP  LLAVE_C                 {: clavesList.add( new Manejador(e.getLexeme()));  :}
             | DEF BARRAS:e LLAVE_A cuerpoDefinicionB LLAVE_C definicion     {: clavesList.add( new Manejador(e.getLexeme()));  :}
             | DEF PIE:e LLAVE_A  cuerpoDefinicionP  LLAVE_C  definicion     {: clavesList.add( new Manejador(e.getLexeme()));  :}
-            | error                                                         {: System.out.println("Error en gramatica");  :}
             ;
 
 ejecutar ::= EJECUTAR PARENTESIS_A COMILLA IDENTIFICADOR:i COMILLA PARENTESIS_C PUNTO_COMA               {: clavesList.add( new Manejador(i.getLexeme())); :}
            | EJECUTAR PARENTESIS_A COMILLA IDENTIFICADOR:i COMILLA PARENTESIS_C PUNTO_COMA ejecutar      {: clavesList.add( new Manejador(i.getLexeme())); :}
-           | error                                                         {: System.out.println("Error en gramatica");  :}
            ;
 
 cuerpoDefinicionB   ::= titulo 
                     |  ejex 
                     |  ejey
-                    |  unir 
-                    |  titulo cuerpoDefinicionB 
+                    |  unir
+                    |  titulo cuerpoDefinicionB
                     |  ejex cuerpoDefinicionB
                     |  ejey cuerpoDefinicionB
-                    |  unir cuerpoDefinicionB  
+                    |  unir cuerpoDefinicionB
                     ;
 
 cuerpoDefinicionP ::= titulo
@@ -142,11 +146,9 @@ cuerpoDefinicionP ::= titulo
                     ;
                 
 comentario ::= COMENTARIO:c             {: clavesList.add( new Manejador(c.getLexeme()));  :}
-            | error                                                         {: System.out.println("Error en gramatica");  :}
             ;
 
 titulo ::= TITULO DOS_PUNTOS COMILLA IDENTIFICADOR:nombreGrafica COMILLA PUNTO_COMA     {: clavesList.add( new Manejador(nombreGrafica.getLexeme()));  :}
-        | error                                                         {: System.out.println("Error en gramatica");  :}
         ;
 
 ejex ::= EJE_X DOS_PUNTOS CORCHETE_A  item  CORCHETE_C PUNTO_COMA
@@ -181,7 +183,6 @@ total ::= TOTAL DOS_PUNTOS itemN PUNTO_COMA
 
 item ::= COMILLA IDENTIFICADOR:identificador COMILLA                  {: clavesList.add( new Manejador(identificador.getLexeme()));  :}
         | COMILLA IDENTIFICADOR:identificador COMILLA COMA item       {: clavesList.add( new Manejador(identificador.getLexeme()));  :}
-        | error                                                     {: System.out.println("Error en gramatica");  :}
         ;
 
 itemN ::= NUMERO:n              {: clavesList.add( new Manejador(n.getLexeme()));  :}
@@ -284,7 +285,6 @@ expresion ::= NUMERO:n1 MAS:m NUMERO:n2         {:
                                                 clavesList.add( new Manejador(dia.getLexeme()));
                                                 clavesList.add( new Manejador(n.getLexeme()));  
                                                 :}
-            | error                                                {: System.out.println("Error en gramatica");  :}
             ;
 
 
